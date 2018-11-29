@@ -60,8 +60,9 @@ shuffle=False, batch_size=128, step=6):
             targets[j] = data[rows[j] + delay][1]
         yield samples, targets
         
-  #Prepare the training, validation and test generators
-  lookback = 1440
+
+#Prepare the training, validation and test generators
+lookback = 1440
 step = 6
 delay = 144
 batch_size = 128
@@ -131,3 +132,17 @@ plt.plot(epochs, val_loss, 'b', label='Validation loss')
 plt.title('Training and validation loss')
 plt.legend()
 plt.show()
+
+#Using GRU (Gated Recurrent Unit)
+from keras.models import Sequential
+from keras import layers
+from keras.optimizers import RMSprop
+model = Sequential()
+model.add(layers.GRU(32, input_shape=(None, float_data.shape[-1])))
+model.add(layers.Dense(1))
+model.compile(optimizer=RMSprop(), loss='mae')
+history = model.fit_generator(train_gen,
+steps_per_epoch=500,
+epochs=20,
+validation_data=val_gen,
+validation_steps=val_steps)
